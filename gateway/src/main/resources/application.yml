@@ -1,0 +1,41 @@
+server:
+  port: 10010
+
+spring:
+  cloud:
+    gateway:
+      enabled: true
+      routes:
+        - id: user-route # 路由的id,唯一即可
+          uri: lb://userservice # lb是负载均衡的策略
+          predicates:
+            - Path=/user/** # 通过路径进行匹配
+          filters:
+            - AddRequestHeader=origin,gateway
+        - id: order-route
+          uri: lb://orderservice
+          predicates:
+            - Path=/order/**
+          filters:
+            - AddRequestHeader=mubiao,14wOneyear
+      # default-filters: 针对全局的路由都生效
+      globalcors:
+        add-to-simple-url-handler-mapping: true # 让网关放行options的信息，这个信息主要是返回给浏览器允许跨域的
+        cors-configurations:
+          '[/**]': # 跨域配置要处理哪些url的请求，这里设置的是处理所有的
+            allowedOrigins:
+              - "http://localhost:8080" # 允许跨域的地址
+              - "http://localhost:8090" # 允许跨域的地址
+            allowedMethods: # 允许跨域的方法类型
+              - "GET"
+              - "POST"
+              - "PUT"
+              - "DELETE"
+              - "OPTIONS"
+            allowedHeaders: "*" # 跨域请求中请求头允许携带的信息
+            allowCredentials: true # 是否允许跨域请求携带cookie
+            maxAge: 36000 # 这次跨域检测的有效时间
+
+
+
+

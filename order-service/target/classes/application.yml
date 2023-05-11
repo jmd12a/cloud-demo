@@ -1,0 +1,58 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/dorder?useSSL=false
+    username: root
+    password: 122964
+    driver-class-name: com.mysql.jdbc.Driver
+#  cloud:
+#    nacos:
+#      discovery:
+#        cluster-name: ly
+#        namespace: f0e965ab-d760-4f3e-aa80-d881b5ef84e3 # 设置这个服务的命名空间
+        # 命名空间：命名空间是比集群更彻底的一种隔离，两个不同命名空间的服务完全无法互相访问，我们往往设置开发空间 测试空间 和真正上线的服务器空空空间
+
+mybatis:
+  type-aliases-package: cn.itcast.order.pojo
+  configuration:
+    map-underscore-to-camel-case: true
+logging:
+  level:
+    cn.itcast: debug
+  pattern:
+    dateformat: MM-dd HH:mm:ss:SSS
+
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:10010/eureka # 这里是eureka客户端的地址，而非该服务的地址
+
+# 配置order-service调用user-service时的负载均衡优化策略
+userserver:
+  ribbon:
+    NFLoadBalancerRuleClassName: com.alibaba.cloud.nacos.ribbon.NacosRule # 使用nacosRule负载均衡策略，有限访问相同集群的服务
+
+ribbon:
+  eager-load:
+    enabled: true # 开启饥饿加载
+    clients:
+      - userservice # 指定需要饥饿加载的服务
+
+# 通过application.yml文件的方式实现自定义配置
+#feign:
+#  client:
+#    config:
+#      default:
+#        loggerLevel: BASIC
+feign:
+  httpclient:
+    enabled: true # 支持httpClient
+    max-connections: 200
+    max-connections-per-route: 50
+  client:
+    config:
+      default:
+        loggerLevel: BASIC
+  sentinel:
+    enabled: true
